@@ -1,0 +1,81 @@
+:root {
+  --primary-color: #4F46E5;
+  --primary-light: #818CF8;
+  --secondary-color: #10B981;
+  --accent-color: #F59E0B;
+  --bg-color: #F3F4F6;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --text-main: #1F2937;
+  --text-muted: #6B7280;
+}
+
+body {
+  background-color: var(--bg-color) !important;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+.dashboard-container {
+  padding: 2rem;
+}
+
+/* Premium Card Styles */
+.premium-card {
+  background: var(--card-bg) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01) !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden;
+}
+
+.premium-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.premium-card .card-body {
+  padding: 1.5rem;
+}
+
+/* Stat card specific */
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.stat-icon.primary { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
+.stat-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
+.stat-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
+
+.stat-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Chart container */
+.chart-container-wrapper {
+  position: relative;
+  height: 350px;
+  width: 100%;
+}
