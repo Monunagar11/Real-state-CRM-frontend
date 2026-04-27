@@ -3,6 +3,11 @@ import AppLayout from "./components/layouts/AppLayout"
 import { store } from "./store/store"
 import { Provider } from "react-redux"
 import Dashboard from "./pages/Dashboard"
+import RealEstateDashboard from "./pages/RealEstateDashboard"
+import Profile from "./pages/Profile"
+import AddProperty from "./pages/AddProperty"
+import Clients from "./pages/Clients"
+import Leads from "./pages/Leads"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -33,6 +38,26 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />
+      },
+      {
+        path: "real-estate",
+        element: <RealEstateDashboard />
+      },
+      {
+        path: "profile",
+        element: <Profile />
+      },
+      {
+        path: "add-property",
+        element: <AddProperty />
+      },
+      {
+        path: "clients",
+        element: <Clients />
+      },
+      {
+        path: "leads",
+        element: <Leads />
       }
     ]
   }
