@@ -95,7 +95,7 @@ const RealEstateDashboard = () => {
                     <h4 className="mb-0 fw-bold ">Real Estate</h4>
                     <span className="text-muted">Dashboard / Real Estate</span>
                 </div>
-                <button className="btn btn-primary shadow-sm"><i className="bi bi-plus-circle me-1"></i><NavLink to="/admin/add-property" className="text-decoration-none text-white"> Add Property</NavLink></button>
+                <button className="btn btn-primary shadow-sm"><i className="bi bi-plus-circle me-1"></i><NavLink to="/admin/add-propertyy" className="text-decoration-none text-white"> Add Property</NavLink></button>
             </div>
 
             {/* Top Cards */}
