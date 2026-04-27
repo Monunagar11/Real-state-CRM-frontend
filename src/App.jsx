@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard"
 import RealEstateDashboard from "./pages/RealEstateDashboard"
 import Profile from "./pages/Profile"
 import AddProperty from "./pages/AddProperty"
+import PropertyLists from "./pages/PropertyLists"
+import PropertyOverview from "./pages/PropertyOverview"
 import Clients from "./pages/Clients"
 import Leads from "./pages/Leads"
 import Login from "./pages/Login"
@@ -50,6 +52,14 @@ const router = createBrowserRouter([
       {
         path: "add-property",
         element: <AddProperty />
+      },
+      {
+        path: "properties",
+        element: <PropertyLists />
+      },
+      {
+        path: "properties/:id",
+        element: <PropertyOverview />
       },
       {
         path: "clients",

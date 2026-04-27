@@ -1,7 +1,50 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import ReactApexChart from 'react-apexcharts';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProperties } from '../features/property/propertySlice';
+import { fetchLeads } from '../features/lead/leadSlice';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const RealEstateDashboard = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const { properties } = useSelector(state => state.property);
+    const { leads } = useSelector(state => state.lead);
+
+    useEffect(() => {
+        dispatch(fetchProperties());
+        dispatch(fetchLeads());
+    }, [dispatch]);
+
+    const stats = useMemo(() => {
+        const forSale = properties.filter(p => p.status !== 'LEASED').length;
+        const forRent = properties.filter(p => p.status === 'LEASED').length;
+        const totalVisitors = leads.length;
+        const residential = properties.filter(p => p.type === 'Residential').length;
+
+        const commercialCount = properties.filter(p => p.type === 'Commercial').length;
+        const villaCount = properties.filter(p => p.type === 'Villa').length;
+        
+        const total = properties.length || 1; // avoid division by zero
+        
+        return {
+            forSale,
+            forRent,
+            totalVisitors,
+            residential,
+            commercialPct: Math.round((commercialCount / total) * 100),
+            residentialPct: Math.round((residential / total) * 100),
+            villaPct: Math.round((villaCount / total) * 100)
+        };
+    }, [properties, leads]);
+
+    const recentProperties = useMemo(() => {
+        return [...properties]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 5);
+    }, [properties]);
+
     // Chart configurations
     const propertiesTypeOptions = {
         chart: { type: 'radialBar', height: 350 },
@@ -17,11 +60,11 @@ const RealEstateDashboard = () => {
             }
         },
         fill: { type: 'gradient', gradient: { shade: 'light', shadeIntensity: 0.4, inverseColors: false, opacityFrom: 1, opacityTo: 1, stops: [0, 50, 53, 91] } },
-        labels: ['Average Results'],
-        colors: ['#4b38b3'],
+        labels: ['Commercial', 'Residential', 'Villa'],
+        colors: ['#4b38b3', '#198754', '#ffc107'],
     };
 
-    const propertiesTypeSeries = [76];
+    const propertiesTypeSeries = [stats.commercialPct, stats.residentialPct, stats.villaPct];
 
     const revenueOptions = {
         chart: { type: 'bar', height: 350, toolbar: { show: false } },
@@ -52,16 +95,16 @@ const RealEstateDashboard = () => {
                     <h4 className="mb-0 fw-bold ">Real Estate</h4>
                     <span className="text-muted">Dashboard / Real Estate</span>
                 </div>
-                <button className="btn btn-primary shadow-sm"><i className="bi bi-plus-circle me-1"></i> Add Property</button>
+                <button className="btn btn-primary shadow-sm"><i className="bi bi-plus-circle me-1"></i><NavLink to="/admin/add-property" className="text-decoration-none text-white"> Add Property</NavLink></button>
             </div>
 
             {/* Top Cards */}
             <div className="row g-4 mb-4">
                 {[
-                    { title: "Properties for sale", value: "3,652", trend: "up", percent: "06.19%", icon: "bi-house", color: "primary", series: [80] },
-                    { title: "Properties for rent", value: "1,524", trend: "up", percent: "02.33%", icon: "bi-building", color: "success", series: [65] },
-                    { title: "Visitors", value: "14.9k", trend: "down", percent: "01.12%", icon: "bi-people", color: "warning", series: [45] },
-                    { title: "Residency Property", value: "2,364", trend: "up", percent: "04.80%", icon: "bi-buildings", color: "info", series: [70] }
+                    { title: "Properties for sale", value: stats.forSale, trend: "up", percent: "0%", icon: "bi-house", color: "primary", series: [80] },
+                    { title: "Properties for rent", value: stats.forRent, trend: "up", percent: "0%", icon: "bi-building", color: "success", series: [65] },
+                    { title: "Visitors", value: stats.totalVisitors, trend: "up", percent: "0%", icon: "bi-people", color: "warning", series: [45] },
+                    { title: "Residency Property", value: stats.residential, trend: "up", percent: "0%", icon: "bi-buildings", color: "info", series: [70] }
                 ].map((item, index) => (
                     <div key={index} className="col-xl-3 col-md-6">
                         <div className="card border-0 shadow-sm h-100 rounded-3">
@@ -118,15 +161,15 @@ const RealEstateDashboard = () => {
                             <div className="mt-3 px-3">
                                 <div className="d-flex justify-content-between mb-3 border-bottom pb-2">
                                     <span className="text-muted"><i className="bi bi-circle-fill text-primary me-2" style={{fontSize: "10px"}}></i> Commercial</span>
-                                    <span className="fw-bold ">45%</span>
+                                    <span className="fw-bold ">{stats.commercialPct}%</span>
                                 </div>
                                 <div className="d-flex justify-content-between mb-3 border-bottom pb-2">
                                     <span className="text-muted"><i className="bi bi-circle-fill text-success me-2" style={{fontSize: "10px"}}></i> Residential</span>
-                                    <span className="fw-bold ">35%</span>
+                                    <span className="fw-bold ">{stats.residentialPct}%</span>
                                 </div>
                                 <div className="d-flex justify-content-between">
                                     <span className="text-muted"><i className="bi bi-circle-fill text-warning me-2" style={{fontSize: "10px"}}></i> Villa</span>
-                                    <span className="fw-bold ">20%</span>
+                                    <span className="fw-bold ">{stats.villaPct}%</span>
                                 </div>
                             </div>
                         </div>
@@ -157,33 +200,39 @@ const RealEstateDashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {[
-                                            { id: "#STX01", name: "Villa With Swimming Pool", loc: "New York, USA", agent: "Diana Jones", price: "$2,451.20", status: "Sale", color: "danger" },
-                                            { id: "#STX02", name: "Luxury Apartment", loc: "Los Angeles, USA", agent: "James Smith", price: "$3,100.00", status: "Rent", color: "info" },
-                                            { id: "#STX03", name: "Modern House", loc: "Chicago, USA", agent: "William Doe", price: "$1,850.00", status: "Sale", color: "danger" },
-                                            { id: "#STX04", name: "Studio Apartment", loc: "Miami, USA", agent: "Alice Johnson", price: "$950.00", status: "Rent", color: "info" }
-                                        ].map((prop, i) => (
+                                        {recentProperties.map((prop, i) => (
                                             <tr key={i}>
-                                                <td className="ps-4"><a href="#!" className="text-primary fw-semibold">{prop.id}</a></td>
+                                                <td className="ps-4">
+                                                    <a href="#!" className="text-primary fw-semibold text-truncate" style={{maxWidth: '80px', display: 'inline-block'}}>
+                                                        #{prop._id.substring(0, 6)}
+                                                    </a>
+                                                </td>
                                                 <td>
                                                     <div className="d-flex align-items-center">
                                                         <div className="flex-shrink-0 me-3">
-                                                            <div className="avatar-sm bg-light rounded d-flex align-items-center justify-content-center" style={{width: "48px", height: "48px"}}>
-                                                                <i className="bi bi-house text-primary fs-4"></i>
+                                                            <div className="avatar-sm bg-light rounded d-flex align-items-center justify-content-center overflow-hidden" style={{width: "48px", height: "48px"}}>
+                                                                {prop.images?.length > 0 ? (
+                                                                    <img src={prop.images[0]} alt="" className="w-100 h-100 object-fit-cover" />
+                                                                ) : (
+                                                                    <i className="bi bi-house text-primary fs-4"></i>
+                                                                )}
                                                             </div>
                                                         </div>
                                                         <div className="flex-grow-1">
-                                                            <h6 className="mb-0 fw-semibold ">{prop.name}</h6>
+                                                            <h6 className="mb-0 fw-semibold text-truncate" style={{maxWidth: '180px'}}>{prop.title}</h6>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="text-muted">{prop.loc}</td>
-                                                <td>{prop.agent}</td>
-                                                <td className="fw-semibold ">{prop.price}</td>
-                                                <td><span className={`badge bg-${prop.color} bg-opacity-10 text-${prop.color} px-2 py-1 rounded`}>{prop.status}</span></td>
+                                                <td className="text-muted text-truncate" style={{maxWidth: '150px'}}>{prop.location}</td>
+                                                <td>Admin</td>
+                                                <td className="fw-semibold ">${prop.price?.toLocaleString()}</td>
+                                                <td>
+                                                    <span className={`badge bg-${prop.status === 'AVAILABLE' ? 'success' : 'primary'} bg-opacity-10 text-${prop.status === 'AVAILABLE' ? 'success' : 'primary'} px-2 py-1 rounded`}>
+                                                        {prop.status}
+                                                    </span>
+                                                </td>
                                                 <td className="pe-4">
-                                                    <button className="btn btn-sm btn-light btn-icon me-2 text-secondary"><i className="bi bi-eye"></i></button>
-                                                    <button className="btn btn-sm btn-light btn-icon text-secondary"><i className="bi bi-pencil"></i></button>
+                                                    <button onClick={() => navigate(`/admin/properties/${prop._id}`)} className="btn btn-sm btn-light btn-icon me-2 text-secondary"><i className="bi bi-eye"></i></button>
                                                 </td>
                                             </tr>
                                         ))}

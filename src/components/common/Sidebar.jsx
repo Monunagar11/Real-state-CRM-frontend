@@ -6,7 +6,7 @@ function Sidebar({ isOpen }) {
     <div className={`sidebar ${isOpen ? 'show' : ''}`}>
       <a href="/admin" className="sidebar-logo">
         <i className="bi bi-boxes me-2 text-primary"></i>
-        STEEX
+        AgentDesk
       </a>
       <ul className="sidebar-menu">
         <li className="menu-title">Menu</li>
@@ -35,7 +35,7 @@ function Sidebar({ isOpen }) {
           </NavLink>
         </li>
         <li>
-          <NavLink to="#properties" className="menu-item">
+          <NavLink to="/admin/properties" className="menu-item">
             <i className="bi bi-house-door"></i> Properties
           </NavLink>
         </li>
